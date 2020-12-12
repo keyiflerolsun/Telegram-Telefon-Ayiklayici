@@ -1,8 +1,8 @@
 # Bu araç @keyiflerolsun tarafından | @KekikAkademi için yazılmıştır.
 
 from pyrogram import Client
-import os, json
-from time import sleep
+from pyrogram.errors import PeerIdInvalid
+import json
 from tabulate import tabulate
 
 SESSION  = 'sessionlar/'
@@ -17,9 +17,9 @@ def ayiklayici():
 
     telefonlar = []
     for hesap in config:
-        api_id   = hesap['id']
-        api_hash = hesap['hash']
-        telefon  = hesap['tel']
+        api_id   = hesap['api_id']
+        api_hash = hesap['api_hash']
+        telefon  = hesap['telefon']
         client = Client(SESSION + telefon, api_id, api_hash)
 
         with client as app:
@@ -51,7 +51,10 @@ def ayiklayici():
     with open('KekikTelefon.txt', 'w+') as tablo_tel:
         tablo_tel.write(tabulate(kisiler, headers='keys', tablefmt='psql'))
 
-    muhtara_salla()
+    try:
+        muhtara_salla()
+    except PeerIdInvalid:
+        pass
 
     print(tabulate(kisiler, headers='keys', tablefmt='psql'))
     print(f'\nToplamda {len(kisiler)} Adet Benzersiz Telefon Numarası Ayıklandı ve Kaydedildi..')
@@ -61,9 +64,9 @@ def muhtara_salla():
     with open(f'{SESSION}bilgiler.json', 'r', encoding='utf-8') as f:
         config = json.loads(f.read())[0]
 
-    api_id   = config['id']
-    api_hash = config['hash']
-    telefon  = config['tel']
+    api_id   = config['api_id']
+    api_hash = config['api_hash']
+    telefon  = config['telefon']
     client   = Client(SESSION + telefon, api_id, api_hash)
 
     with client as app:

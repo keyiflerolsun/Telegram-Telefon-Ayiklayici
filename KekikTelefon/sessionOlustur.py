@@ -10,9 +10,9 @@ if not os.path.isdir(SESSION):
     os.mkdir(SESSION)
 
 def sessioncu():
-    api_id    = input('API ID: ')
-    api_hash  = input('API HASH: ')
-    telefon   = input('Telefon Numarası (+90 ile): ')
+    api_id    = input('API ID        : ')
+    api_hash  = input('API HASH      : ')
+    telefon   = input('Telefon(+xxxx): ').replace(' ', '')
     print('\n')
 
     try:
@@ -32,13 +32,22 @@ def sessioncu():
         print(f'Hata Var !\n\t`{type(hata).__name__}`\n\t{hata}')
         return
 
+    bilgilerim = {}
     with client as app:
+        ben = app.get_me()
+        bilgilerim['nick'] = f"@{ben.username}" if ben.username else None
+        bilgilerim['ad']   = f"{ben.first_name} {ben.last_name}"
+        bilgilerim['uid']  = ben.id
+
         app.send_message('me', f'__Merhaba, Ben **KekikTelefon** Tarafından Gönderildim!__\n\n__Senin Bilgilerin;__\n\n**ID :** `{api_id}`\n**Hash :** `{api_hash}`\n**Telefon :** `{telefon}`\n\n**Kendi gizliliğin için bunları kimseyle paylaşma..**')
 
     dict2json({
-            'id'    : api_id,
-            'hash'  : api_hash,
-            'tel'   : telefon
+            'api_id'        : api_id,
+            'api_hash'      : api_hash,
+            'telefon'       : telefon,
+            'kullanici_id'  : bilgilerim['uid'],
+            'kullanici_nick': bilgilerim['nick'],
+            'kullanici_adi' : bilgilerim['ad']
         }, dosya_adi=f'{SESSION}bilgiler.json')
 
     print(f'\n\n\t\t{telefon} Session Kayıt Edildi..!')
@@ -57,5 +66,5 @@ def dict2json(sozluk:dict, dosya_adi:str):
         with open(dosya_adi, mode='w') as dosya:
             liste = [sozluk]
             essiz = [dict(sozluk) for sozluk in {tuple(liste_ici.items()) for liste_ici in liste}]
-            a_z   = sorted(essiz, key=lambda sozluk: sozluk['id'])
+            a_z   = sorted(essiz, key=lambda sozluk: sozluk['api_id'])
             dosya.write(json.dumps(a_z, indent=2, ensure_ascii=False, sort_keys=False))

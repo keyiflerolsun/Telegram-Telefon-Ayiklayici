@@ -11,6 +11,7 @@ taban = KekikTaban(
 
 konsol = taban.konsol
 
+import asyncio
 from KekikTelefon import sessioncu, ayiklayici
 from os import getcwd
 from time import sleep
@@ -37,7 +38,7 @@ def acilis_sayfasi():
         taban.logo_yazdir()
         taban.bilgi_yazdir()
 
-        sessioncu()
+        asyncio.run(sessioncu())
         sleep(2)
         # acilis_sayfasi()
     #-----------------------#
@@ -45,7 +46,7 @@ def acilis_sayfasi():
         taban.logo_yazdir()
         taban.bilgi_yazdir()
 
-        ayiklayici()
+        asyncio.run(ayiklayici())
         # sleep(2)
         # acilis_sayfasi()
     #-----------------------#

@@ -1,18 +1,7 @@
 # Bu araç @keyiflerolsun tarafından | @KekikAkademi için yazılmıştır.
 
-from KekikTaban import KekikTaban
-
-taban = KekikTaban(
-    baslik   = "@KekikAkademi TelefonScript",
-    aciklama = "KekikTelefon Başlatıldı..",
-    banner   = "KekikTelefon",
-    girinti  = 3
-)
-
-konsol = taban.konsol
-
 import asyncio
-from KekikTelefon import sessioncu, ayiklayici
+from KekikTelefon import konsol, taban, sessioncu, ayiklayici
 from os import getcwd
 from time import sleep
 
@@ -39,7 +28,7 @@ def acilis_sayfasi():
         taban.bilgi_yazdir()
 
         asyncio.run(sessioncu())
-        sleep(2)
+        # sleep(2)
         # acilis_sayfasi()
     #-----------------------#
     elif secenek == '2':

@@ -54,16 +54,16 @@ async def sessioncu():
 
 async def dict2json(sozluk:dict, dosya_adi:str):
     if os.path.isfile(dosya_adi):
-        with open(dosya_adi) as gelen_json:
+        with open(dosya_adi, encoding='utf-8') as gelen_json:
             gelen_veri = json.load(gelen_json)
 
         gelen_veri.append(sozluk)
 
-        with open(dosya_adi, mode='w') as dosya:
+        with open(dosya_adi, mode='w', encoding='utf-8') as dosya:
             dosya.write(json.dumps(gelen_veri, indent=2, ensure_ascii=False, sort_keys=False))
 
     else:
-        with open(dosya_adi, mode='w') as dosya:
+        with open(dosya_adi, mode='w', encoding='utf-8') as dosya:
             liste = [sozluk]
             essiz = [dict(sozluk) for sozluk in {tuple(liste_ici.items()) for liste_ici in liste}]
             a_z   = sorted(essiz, key=lambda sozluk: sozluk['api_id'])

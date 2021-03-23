@@ -48,10 +48,10 @@ async def ayiklayici():
     a_z     = sorted(essiz, key=lambda sozluk: sozluk['id'])
     kisiler = [kisi for kisi in a_z if kisi['tel'] and kisi['tel'].startswith('+90')]
 
-    with open('KekikTelefon.json', 'w+') as json_tel:
+    with open('KekikTelefon.json', 'w+', encoding='utf-8') as json_tel:
         json_tel.write(json.dumps(kisiler, indent=2, sort_keys=False, ensure_ascii=False))
 
-    with open('KekikTelefon.txt', 'w+') as tablo_tel:
+    with open('KekikTelefon.txt', 'w+', encoding='utf-8') as tablo_tel:
         tablo_tel.write(tabulate(kisiler, headers='keys', tablefmt='psql'))
 
     try:
